@@ -4,6 +4,7 @@ import sqlite3
 from datetime import datetime
 import json
 import os
+from dotenv import load_dotenv  # import dotenv
 
 app = Flask(__name__, static_folder='web')
 CORS(app)
@@ -12,6 +13,11 @@ DATABASE = "/etc/x-ui/x-ui.db"
 SPECIAL_EPOCH_STR = "1970-01-01T07:00:00"
 SPECIAL_EPOCH_DATETIME = datetime.strptime(SPECIAL_EPOCH_STR, "%Y-%m-%dT%H:%M:%S")
 
+# Load environment variables from .env
+load_dotenv()
+
+SSL_CERT_PATH = os.getenv("SSL_CERT_PATH")
+SSL_KEY_PATH = os.getenv("SSL_KEY_PATH")
 
 # Serve frontend files
 @app.route('/')
@@ -21,7 +27,6 @@ def index():
 @app.route('/<path:path>')
 def static_files(path):
     return send_from_directory('web', path)
-
 
 # Get client info from DB
 def get_client_data(username):
@@ -63,7 +68,6 @@ def get_client_data(username):
         print(f"[DB ERROR] {e}")
         return None
 
-
 # API endpoint
 @app.route("/api/client", methods=["GET"])
 def api_client():
@@ -82,8 +86,10 @@ def api_client():
         return jsonify({"status": "error", "message": "Client not found"}), 404
 
 
-# Run with SSL
+# Run with SSL using paths from .env
 if __name__ == "__main__":
-    cert_path = '/root/cert/hostdeyya.novalink.lk/fullchain.pem'
-    key_path = '/root/cert/hostdeyya.novalink.lk/privkey.pem'
-    app.run(host="0.0.0.0", port=8000, ssl_context=(cert_path, key_path))
+    if not SSL_CERT_PATH or not SSL_KEY_PATH:
+        print("Error: SSL_CERT_PATH or SSL_KEY_PATH not set in .env file")
+        exit(1)
+
+    app.run(host="0.0.0.0", port=8000, ssl_context=(SSL_CERT_PATH, SSL_KEY_PATH))
