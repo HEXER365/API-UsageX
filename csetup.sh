@@ -10,7 +10,7 @@ REQUIREMENTS_FILE="$APP_DIR/requirements.txt"
 SERVICE_NAME="api"
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
-# Step 0: Clone repo if not already cloned
+# Clone repo if not cloned
 if [ ! -d "$CLONE_DIR" ]; then
   echo "Cloning repository from $REPO_URL..."
   git clone "$REPO_URL" "$CLONE_DIR"
@@ -18,18 +18,23 @@ else
   echo "Repository already cloned at $CLONE_DIR."
 fi
 
-# Step 0.5: Move files from clone dir to APP_DIR (excluding .git)
+# Move files excluding .git
 echo "Moving files from $CLONE_DIR to $APP_DIR..."
-shopt -s extglob
-mv "$CLONE_DIR"/!(.git) "$APP_DIR"
+shopt -s extglob nullglob
+files=("$CLONE_DIR"/!(".git"))
+if [ ${#files[@]} -gt 0 ]; then
+  mv "${files[@]}" "$APP_DIR"
+else
+  echo "No files to move!"
+fi
 rm -rf "$CLONE_DIR"
 echo "Files moved."
 
-# Debug: List files after move to confirm requirements.txt location
+# Debug: confirm requirements.txt exists
 echo "Listing files in $APP_DIR:"
 ls -l "$APP_DIR"
 
-# Step 1: Create .env file if not exists
+# Create .env if not exists
 if [ ! -f "$ENV_FILE" ]; then
   echo ".env file not found. Let's create it."
   read -p "Enter full path to your SSL fullchain certificate (.pem): " ssl_cert
@@ -37,14 +42,14 @@ if [ ! -f "$ENV_FILE" ]; then
 
   echo "Creating .env file at $ENV_FILE..."
   cat > "$ENV_FILE" <<EOF
-SSL_CERT_PATH="$ssl_cert"
-SSL_KEY_PATH="$ssl_key"
+SSL_CERT_PATH=$ssl_cert
+SSL_KEY_PATH=$ssl_key
 EOF
 else
   echo ".env file already exists at $ENV_FILE. Skipping creation."
 fi
 
-# Step 2: Create virtual environment if it doesn't exist
+# Create venv if missing
 if [ ! -d "$VENV_DIR" ]; then
   echo "Virtual environment not found at $VENV_DIR. Creating it..."
   python3 -m venv "$VENV_DIR"
@@ -53,7 +58,7 @@ else
   echo "Virtual environment already exists at $VENV_DIR."
 fi
 
-# Step 3: Install Python dependencies if requirements.txt exists
+# Install dependencies if requirements.txt exists
 if [ -f "$REQUIREMENTS_FILE" ]; then
   echo "Installing Python dependencies from $REQUIREMENTS_FILE..."
   "$VENV_DIR/bin/python" -m pip install --upgrade pip
@@ -62,7 +67,7 @@ else
   echo "No requirements.txt found at $REQUIREMENTS_FILE. Skipping dependency installation."
 fi
 
-# Step 4: Create systemd service file
+# Create systemd service file
 echo "Creating systemd service file for Flask app..."
 
 sudo bash -c "cat > $SERVICE_FILE" <<EOL
@@ -88,13 +93,13 @@ RestartSec=3
 WantedBy=multi-user.target
 EOL
 
-# Step 5: Reload systemd and start service
+# Reload systemd and start service
 echo "Reloading systemd daemon..."
 sudo systemctl daemon-reload
 
 echo "Enabling and starting $SERVICE_NAME service..."
 sudo systemctl enable $SERVICE_NAME
-sudo systemctl start $SERVICE_NAME
+sudo systemctl restart $SERVICE_NAME
 
 echo "✅ Service $SERVICE_NAME started."
 echo "ℹ️  Check status with: sudo systemctl status $SERVICE_NAME"
