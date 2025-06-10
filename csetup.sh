@@ -20,7 +20,7 @@ fi
 
 # Step 0.5: Move files from clone dir to APP_DIR (excluding .git)
 echo "Moving files from $CLONE_DIR to $APP_DIR..."
-shopt -s dotglob
+shopt -s extglob
 mv "$CLONE_DIR"/!(.git) "$APP_DIR"
 rm -rf "$CLONE_DIR"
 echo "Files moved."
