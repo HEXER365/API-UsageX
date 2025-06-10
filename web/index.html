@@ -8,34 +8,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #6C5CE7;
-            --primary-light: #A29BFE;
-            --secondary: #FD79A8;
-            --success: #00B894;
-            --warning: #FDCB6E;
-            --danger: #D63031;
+            /* NEW COLOR PALETTE: Dark Blue, Red, Black, White */
+            --primary: #0A74DA;        /* Dark Blue */
+            --primary-light: #3FA9F5;  /* Lighter Blue */
+            --secondary: #D82E2F;       /* Red */
+            --success: #00B894;         /* Kept for semantic color meaning */
+            --warning: #FDCB6E;         /* Kept for semantic color meaning */
+            --danger: #D82E2F;          /* Red */
 
             /* Dark Theme (Default) */
-            --bg-gradient-start: #2D3436;
-            --bg-gradient-end: #000000;
-            --text-light: rgba(255, 255, 255, 0.9);
-            --text-lighter: rgba(255, 255, 255, 0.7);
-            --text-heading: linear-gradient(to right, var(--primary-light), var(--secondary));
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --preloader-bg: #2D3436;
+            --bg-gradient-start: #1A1A1A; /* Dark Gray */
+            --bg-gradient-end: #000000;   /* Black */
+            --text-light: rgba(255, 255, 255, 0.95); /* White */
+            --text-lighter: rgba(255, 255, 255, 0.7); /* Lighter White */
+            --text-heading: linear-gradient(to right, var(--primary-light), #FFFFFF); /* Light Blue to White */
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --card-bg: rgba(30, 30, 30, 0.7); /* Darker card for better contrast */
+            --preloader-bg: #1A1A1A;
             
             --transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --transition-fast: all 0.3s ease;
         }
 
         body.light-theme {
+            /* Adjusted Light Theme */
             --bg-gradient-start: #F5F6FA;
             --bg-gradient-end: #DFE6E9;
             --text-light: #2D3436;
             --text-lighter: #636E72;
-            --text-heading: linear-gradient(to right, var(--primary), #2D3436);
+            --text-heading: linear-gradient(to right, var(--primary), var(--danger)); /* Dark Blue to Red */
             --glass: rgba(0, 0, 0, 0.05);
             --glass-border: rgba(0, 0, 0, 0.1);
             --card-bg: rgba(255, 255, 255, 0.6);
@@ -112,7 +114,7 @@
         }
 
         .logo { display: flex; align-items: center; gap: 1rem; z-index: 1; }
-        .logo-icon { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3); transition: var(--transition); }
+        .logo-icon { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(10, 116, 218, 0.3); transition: var(--transition); }
         .logo-icon:hover { transform: rotate(15deg); }
         .logo-icon i { font-size: 1.75rem; color: white; }
         .logo-text h1 { font-size: 1.8rem; font-weight: 700; background: var(--text-heading); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -122,9 +124,9 @@
         .search-container { position: relative; width: 100%; max-width: 400px; }
         .search-input { width: 100%; padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid var(--glass-border); background: var(--glass); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); color: var(--text-light); font-size: 1rem; transition: var(--transition-fast); padding-right: 3.5rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
         .search-input::placeholder { color: var(--text-lighter); }
-        .search-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3); background: rgba(255, 255, 255, 0.2); }
+        .search-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(10, 116, 218, 0.3); background: rgba(255, 255, 255, 0.2); }
         body.light-theme .search-input:focus { background: rgba(0, 0, 0, 0.05); }
-        .search-btn { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3); }
+        .search-btn { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); box-shadow: 0 4px 15px rgba(10, 116, 218, 0.3); }
         .search-btn:hover { transform: translateY(-50%) scale(1.1); background: var(--primary-light); }
 
         .theme-switcher { background: var(--glass); border: 1px solid var(--glass-border); width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-fast); position: relative; overflow: hidden; }
@@ -136,7 +138,7 @@
 
         .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; perspective: 1000px; }
         .card { background: var(--card-bg); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); transition: var(--transition); transform-style: preserve-3d; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden; }
-        .card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient( to bottom right, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 60% ); transform: rotate(30deg); pointer-events: none; }
+        .card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient( to bottom right, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 60% ); transform: rotate(30deg); pointer-events: none; }
         body.light-theme .card::before { display: none; }
         .card:hover { transform: translateY(-10px) rotateX(5deg) rotateY(5deg); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
@@ -161,7 +163,7 @@
 
         .status-badge { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; background: rgba(0, 184, 148, 0.1); color: var(--success); transition: var(--transition-fast); }
         .status-badge i { margin-right: 0.5rem; }
-        .status-expired { background: rgba(214, 48, 49, 0.1); color: var(--danger); }
+        .status-expired { background: rgba(216, 46, 47, 0.15); color: var(--danger); }
         .client-info { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); }
         .client-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-light); }
         .client-meta { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; color: var(--text-lighter); font-size: 0.875rem; margin-top: 1rem; }
@@ -189,8 +191,7 @@
         /* Footer */
         footer { margin-top: 6rem; padding: 2rem; text-align: center; color: var(--text-lighter); background: var(--glass); border-top: 1px solid var(--glass-border); font-size: 0.875rem; }
         footer a { color: var(--primary-light); text-decoration: none; transition: var(--transition-fast); }
-        footer a:hover { color: var(--secondary);
-        padding: 1150; }
+        footer a:hover { color: var(--secondary); }
 
         /* Preloader styles */
         .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--preloader-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
@@ -202,7 +203,7 @@
         .preloader-progress-bar { height: 100%; background: linear-gradient(to right, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; }
         
         /* Error message */
-        .error-message { position: fixed; top: 2rem; right: 2rem; background: var(--danger); color: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(214, 48, 49, 0.3); display: flex; align-items: center; gap: 0.75rem; transform: translateX(150%); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; }
+        .error-message { position: fixed; top: 2rem; right: 2rem; background: var(--danger); color: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(216, 46, 47, 0.3); display: flex; align-items: center; gap: 0.75rem; transform: translateX(150%); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; }
         .error-message.show { transform: translateX(0); }
         .error-message i { font-size: 1.25rem; }
         
@@ -308,7 +309,7 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         preloader.classList.add('hidden');
-                        loadClientData('PUB01');
+                        loadClientData('PUB01'); // Load default client
                     }, 500);
                 }
                 progressBar.style.width = `${progress}%`;
@@ -316,7 +317,6 @@
 
             createParticles();
             initTheme();
-            // This line will now correctly update the year in the footer
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
         });
 
@@ -372,14 +372,16 @@
             const dashboard = document.getElementById('dashboard');
             dashboard.innerHTML = `<div class="card fade-in" style="grid-column: 1 / -1;"><div class="card-header"><div class="card-title">Loading Data</div><div class="card-icon"><i class="fas fa-spinner fa-spin"></i></div></div><div class="card-value">Please wait</div><div class="card-unit">Fetching client & server information</div></div>`;
             
+            const startTime = performance.now(); // For ping calculation
             try {
-                const serverUrl = 'https://hostdeyya.novalink.lk:8000';
-                const response = await fetch(`${serverUrl}/api/client?username=${username}`);
+                // Using a relative path so the full server URL is not in the source code.
+                const response = await fetch(`/api/client?username=${username}`);
+                const ping = Math.round(performance.now() - startTime); // Calculate ping
                 const data = await response.json();
                 
                 if (data.status === 'success' && data.data) {
-                    displayClientData(data.data);
-                    fetchServerInfo(serverUrl);
+                    // Pass the whole data object and the calculated ping
+                    displayClientData(data.data, ping);
                 } else {
                     showError(data.message || 'Client not found');
                     displayEmptyState();
@@ -392,33 +394,30 @@
         }
 
         // --- DYNAMIC CONTENT DISPLAY ---
-        function displayClientData(client) {
+        // This function now accepts the combined 'data' object and 'ping'
+        function displayClientData(data, ping) {
+            const client = data.client; // Extract client data from the nested object
+            const server = data.server; // Extract server data from the nested object
             const dashboard = document.getElementById('dashboard');
+
             const hasNoDataLimit = client.total_bytes === 0;
             const usagePercent = hasNoDataLimit ? 0 : (client.download_bytes / client.total_bytes) * 100;
             const remainingGB = hasNoDataLimit ? '∞' : ((client.total_bytes - client.download_bytes) / (1024 ** 3)).toFixed(2);
             
-            // --- UPDATED STATUS & EXPIRY LOGIC ---
             let statusBadgeHtml = '';
             let expiryHtml = '';
 
-            // Determine status badge directly from the API's 'status' field
             const isExpired = client.status !== 'active';
-            // Capitalize the first letter of the status for display (e.g., 'active' -> 'Active')
             const statusText = client.status.charAt(0).toUpperCase() + client.status.slice(1);
-
             statusBadgeHtml = `<div class="status-badge ${isExpired ? 'status-expired' : ''}"><i class="fas ${isExpired ? 'fa-times-circle' : 'fa-check-circle'}"></i> ${statusText}</div>`;
 
-            // Handle the expiry time display
-            // A value of 0 or a falsy value (null, empty string) indicates 'unlimited'
-            if (client.expiry_time == 0 || !client.expiry_time) {
+            // A value of 0 from the API indicates 'unlimited'
+            if (client.expiry_time == 0) {
                 expiryHtml = `<span><i class="fas fa-infinity"></i> Unlimited</span>`;
             } else {
-                // The API provides a date string which can be parsed by new Date()
                 const expiryDate = new Date(client.expiry_time);
                 expiryHtml = `<span><i class="far fa-calendar-alt"></i> Expires on: ${expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>`;
             }
-            // --- END UPDATED LOGIC ---
 
             dashboard.innerHTML = `
                 <div class="card fade-in"><div class="card-header"><div class="card-title">Upload Traffic</div><div class="card-icon"><i class="fas fa-upload"></i></div></div><div class="card-value">${client.upload_gb.toFixed(2)}</div><div class="card-unit">GB</div></div>
@@ -426,9 +425,10 @@
                 <div class="card fade-in delay-2"><div class="card-header"><div class="card-title">Total Traffic</div><div class="card-icon"><i class="fas fa-network-wired"></i></div></div><div class="card-value">${hasNoDataLimit ? 'Unlimited' : client.total_gb.toFixed(2)}</div><div class="card-unit">${hasNoDataLimit ? '' : 'GB'}</div></div>
                 <div class="card fade-in delay-3" id="server-info-card">
                     <div class="card-header"><div class="card-title">Server Status</div><div class="card-icon"><i class="fas fa-server"></i></div></div>
-                    <div class="server-info-item"><i class="fas fa-wifi"></i> Ping: <span id="ping-value">Pinging...</span></div>
-                    <div class="server-info-item"><i class="fas fa-map-marker-alt"></i> Location: <span id="location-value">Locating...</span></div>
-                    <div class="server-info-item"><i class="fas fa-building"></i> ISP: <span id="isp-value">Fetching...</span></div>
+                    <!-- Data now comes directly from the API response -->
+                    <div class="server-info-item"><i class="fas fa-wifi"></i> Ping: <span>${ping} ms</span></div>
+                    <div class="server-info-item"><i class="fas fa-map-marker-alt"></i> Location: <span>${server.location}</span></div>
+                    <div class="server-info-item"><i class="fas fa-building"></i> ISP: <span>${server.isp}</span></div>
                 </div>
                 <div class="card fade-in delay-4" style="grid-column: 1 / -1;">
                     <div class="card-header"><div class="card-title">Account Details</div><div class="card-icon"><i class="fas fa-user-cog"></i></div></div>
@@ -437,7 +437,6 @@
                         <div class="progress-bar"><div class="progress-fill" style="width: ${hasNoDataLimit ? 100 : (usagePercent > 100 ? 100 : usagePercent)}%"></div></div>
                     </div>
                     <div class="client-info">
-                        
                         <div class="client-meta">
                            ${statusBadgeHtml}
                            ${expiryHtml}
@@ -445,30 +444,6 @@
                     </div>
                 </div>
             `;
-        }
-        
-        async function fetchServerInfo(serverUrl) {
-            const startTime = performance.now();
-            try { await fetch(serverUrl, { method: 'HEAD', mode: 'no-cors' }); } catch(e) {}
-            const ping = Math.round(performance.now() - startTime);
-            document.getElementById('ping-value').textContent = `${ping} ms`;
-
-            try {
-                const serverIp = new URL(serverUrl).hostname;
-                const geoResponse = await fetch(`http://ip-api.com/json/${serverIp}?fields=status,country,city,isp`);
-                const geoData = await geoResponse.json();
-                if (geoData.status === 'success') {
-                    document.getElementById('location-value').textContent = `${geoData.country}`;
-                    document.getElementById('isp-value').textContent = geoData.isp;
-                } else {
-                    document.getElementById('location-value').textContent = 'Unavailable';
-                    document.getElementById('isp-value').textContent = 'Unavailable';
-                }
-            } catch (error) {
-                console.error("Geolocation error:", error);
-                document.getElementById('location-value').textContent = 'Error';
-                document.getElementById('isp-value').textContent = 'Error';
-            }
         }
 
         function displayEmptyState() {
