@@ -25,6 +25,10 @@ mv "$CLONE_DIR"/!(.git) "$APP_DIR"
 rm -rf "$CLONE_DIR"
 echo "Files moved."
 
+# Debug: List files after move to confirm requirements.txt location
+echo "Listing files in $APP_DIR:"
+ls -l "$APP_DIR"
+
 # Step 1: Create .env file if not exists
 if [ ! -f "$ENV_FILE" ]; then
   echo ".env file not found. Let's create it."
@@ -52,10 +56,8 @@ fi
 # Step 3: Install Python dependencies if requirements.txt exists
 if [ -f "$REQUIREMENTS_FILE" ]; then
   echo "Installing Python dependencies from $REQUIREMENTS_FILE..."
-  source "$VENV_DIR/bin/activate"
-  python -m pip install --upgrade pip
-  pip install -r "$REQUIREMENTS_FILE"
-  deactivate
+  "$VENV_DIR/bin/python" -m pip install --upgrade pip
+  "$VENV_DIR/bin/pip" install -r "$REQUIREMENTS_FILE"
 else
   echo "No requirements.txt found at $REQUIREMENTS_FILE. Skipping dependency installation."
 fi
