@@ -10,31 +10,45 @@ REQUIREMENTS_FILE="$APP_DIR/requirements.txt"
 SERVICE_NAME="api"
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
-# Clone repo if not cloned
+log() {
+  echo -e "\033[1;32m[INFO]\033[0m $1"
+}
+
+err() {
+  echo -e "\033[1;31m[ERROR]\033[0m $1"
+  exit 1
+}
+
+# Check for Python3
+if ! command -v python3 &> /dev/null; then
+  err "Python3 is not installed. Please install Python3 and try again."
+fi
+
+# Clone repo if not already cloned
 if [ ! -d "$CLONE_DIR" ]; then
-  echo "Cloning repository from $REPO_URL..."
-  git clone "$REPO_URL" "$CLONE_DIR"
+  log "Cloning repository from $REPO_URL..."
+  git clone "$REPO_URL" "$CLONE_DIR" || err "Failed to clone repository."
 else
-  echo "Repository already cloned at $CLONE_DIR."
+  log "Repository already cloned at $CLONE_DIR."
 fi
 
 # Move files excluding .git
-echo "Moving files from $CLONE_DIR to $APP_DIR..."
-shopt -s extglob nullglob
+log "Moving files from $CLONE_DIR to $APP_DIR..."
+shopt -s extglob nullglob dotglob
 files=("$CLONE_DIR"/!(".git"))
 if [ ${#files[@]} -gt 0 ]; then
   mv "${files[@]}" "$APP_DIR"
 else
-  echo "No files to move!"
+  err "No files to move from $CLONE_DIR."
 fi
 rm -rf "$CLONE_DIR"
-echo "Files moved."
+log "Files moved successfully."
 
-# Debug: confirm requirements.txt exists
-echo "Listing files in $APP_DIR:"
+# Confirm requirements.txt exists
+log "Listing files in $APP_DIR:"
 ls -l "$APP_DIR"
 
-# Create .env if not exists
+# Create .env if missing
 if [ ! -f "$ENV_FILE" ]; then
   echo ".env file not found. Let's create it."
   read -p "Enter full path to your SSL fullchain certificate (.pem): " ssl_cert
@@ -46,30 +60,34 @@ SSL_CERT_PATH=$ssl_cert
 SSL_KEY_PATH=$ssl_key
 EOF
 else
-  echo ".env file already exists at $ENV_FILE. Skipping creation."
+  log ".env file already exists at $ENV_FILE. Skipping creation."
 fi
 
-# Create venv if missing
+# Create virtual environment
 if [ ! -d "$VENV_DIR" ]; then
-  echo "Virtual environment not found at $VENV_DIR. Creating it..."
-  python3 -m venv "$VENV_DIR"
-  echo "Virtual environment created."
+  log "Creating Python virtual environment at $VENV_DIR..."
+  python3 -m venv "$VENV_DIR" || err "Failed to create virtual environment."
+  log "Virtual environment created."
 else
-  echo "Virtual environment already exists at $VENV_DIR."
+  log "Virtual environment already exists."
 fi
 
-# Install dependencies if requirements.txt exists
+# Verify venv python exists
+if [ ! -x "$VENV_DIR/bin/python" ]; then
+  err "Python not found in $VENV_DIR/bin/python. Virtual environment is broken."
+fi
+
+# Install dependencies
 if [ -f "$REQUIREMENTS_FILE" ]; then
-  echo "Installing Python dependencies from $REQUIREMENTS_FILE..."
-  "$VENV_DIR/bin/python" -m pip install --upgrade pip
-  "$VENV_DIR/bin/pip" install -r "$REQUIREMENTS_FILE"
+  log "Installing Python dependencies from $REQUIREMENTS_FILE..."
+  "$VENV_DIR/bin/python" -m pip install --upgrade pip || err "Failed to upgrade pip."
+  "$VENV_DIR/bin/pip" install -r "$REQUIREMENTS_FILE" || err "Failed to install requirements."
 else
-  echo "No requirements.txt found at $REQUIREMENTS_FILE. Skipping dependency installation."
+  log "No requirements.txt found at $REQUIREMENTS_FILE. Skipping dependency installation."
 fi
 
-# Create systemd service file
-echo "Creating systemd service file for Flask app..."
-
+# Create systemd service
+log "Creating systemd service file at $SERVICE_FILE..."
 sudo bash -c "cat > $SERVICE_FILE" <<EOL
 [Unit]
 Description=Flask API Service
@@ -93,14 +111,14 @@ RestartSec=3
 WantedBy=multi-user.target
 EOL
 
-# Reload systemd and start service
-echo "Reloading systemd daemon..."
-sudo systemctl daemon-reload
+# Reload and start service
+log "Reloading systemd daemon..."
+sudo systemctl daemon-reload || err "Failed to reload systemd daemon."
 
-echo "Enabling and starting $SERVICE_NAME service..."
-sudo systemctl enable $SERVICE_NAME
-sudo systemctl restart $SERVICE_NAME
+log "Enabling and starting $SERVICE_NAME service..."
+sudo systemctl enable $SERVICE_NAME || err "Failed to enable service."
+sudo systemctl restart $SERVICE_NAME || err "Failed to start service."
 
-echo "✅ Service $SERVICE_NAME started."
-echo "ℹ️  Check status with: sudo systemctl status $SERVICE_NAME"
-echo "📜 View logs with: sudo journalctl -u $SERVICE_NAME -f"
+log "✅ Service '$SERVICE_NAME' is now running."
+echo "🔍 Check status: sudo systemctl status $SERVICE_NAME"
+echo "📜 View logs:   sudo journalctl -u $SERVICE_NAME -f"
